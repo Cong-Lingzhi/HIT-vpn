@@ -1,0 +1,33 @@
+// ==UserScript==
+// @name         域名自动跳转修改器
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  将 a.b.c/m 格式的链接重定向为 a-b-c-s.ivpn.hit.edu.cn:1080/m
+// @author       clz
+// @match        *://*/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // 当前网址信息
+    const hostname = window.location.hostname;
+    const pathname = window.location.pathname;
+
+    // 不替换已经是目标形式的地址，避免循环跳转
+    if (hostname.endsWith("ivpn.hit.edu.cn")) return;
+
+    // 将域名按 . 分割并重组成目标格式
+    const domainParts = hostname.split('.');
+    if (domainParts.length < 2) return; // 忽略非正常域名
+
+    const newSubdomain = domainParts.join('-') + '-s';
+    const newHost = `${newSubdomain}.ivpn.hit.edu.cn:1080`;
+
+    // 拼接完整新地址
+    const newUrl = `http://${newHost}${pathname}`;
+
+    // 跳转到新地址
+    window.location.href = newUrl;
+})();
